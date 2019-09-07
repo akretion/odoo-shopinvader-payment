@@ -11,7 +11,7 @@
     "website": "https://akretion.com",
     "author": "Akretion",
     "license": "AGPL-3",
-    "installable": False,
+    "installable": True,
     "depends": ["shopinvader_quotation", "shopinvader_payment"],
     "data": [],
 }
