@@ -7,16 +7,16 @@ import json
 from os.path import dirname
 
 from mock import Mock
-from odoo.addons.payment_gateway.tests.common import PaymentScenarioType
-from odoo.addons.payment_gateway_adyen.tests.test_payment import (
+from openerp.addons.payment_gateway.tests.common import PaymentScenarioType
+from openerp.addons.payment_gateway_adyen.tests.test_payment import (
     ACCEPT_HEADER,
     SHOPPER_IP,
     USER_AGENT,
     AdyenCommonCase,
     AdyenScenario,
 )
-from odoo.addons.shopinvader.tests.common import CommonMixin
-from odoo.exceptions import UserError
+from openerp.addons.shopinvader.tests.common import CommonMixin
+from openerp.exceptions import UserError
 
 REDIRECT_URL = {
     "redirect_cancel_url": "https://IamGoingToKickYourAssIfYouDoNotPaid.com",

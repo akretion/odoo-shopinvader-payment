@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2019 ACSONE SA/NV
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
@@ -102,7 +103,7 @@ class PaymentTransaction(models.Model):
         # Fetch the last reference
         # E.g. If the last reference is SO42-5, this query will return '-5'
         self._cr.execute(
-            """
+            r"""
             SELECT CAST(SUBSTRING(reference FROM '-\d+$') AS INTEGER) AS suffix
             FROM payment_transaction WHERE reference LIKE %s ORDER BY suffix
             """,  # noqa: W605
@@ -240,4 +241,3 @@ class PaymentTransaction(models.Model):
                 ),
             }
         )
-

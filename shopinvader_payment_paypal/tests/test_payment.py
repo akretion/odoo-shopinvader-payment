@@ -4,11 +4,11 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 from mock import Mock
-from odoo.addons.payment_gateway_paypal.tests.test_payment import (
+from openerp.addons.payment_gateway_paypal.tests.test_payment import (
     PaypalCommonCase,
     PaypalScenario,
 )
-from odoo.addons.shopinvader.tests.common import CommonMixin
+from openerp.addons.shopinvader.tests.common import CommonMixin
 
 
 class ShopinvaderPaypalCase(PaypalCommonCase, CommonMixin, PaypalScenario):

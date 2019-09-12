@@ -5,8 +5,8 @@
 
 from os.path import dirname
 
-from odoo.addons.payment_gateway.tests.common import PaymentScenarioType
-from odoo.addons.shopinvader_payment_adyen.tests.test_payment import (
+from openerp.addons.payment_gateway.tests.common import PaymentScenarioType
+from openerp.addons.shopinvader_payment_adyen.tests.test_payment import (
     ACCEPT_HEADER,
     REDIRECT_URL,
     SHOPPER_IP,

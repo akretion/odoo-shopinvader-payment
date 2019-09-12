@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
 # Copyright 2019 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo.addons.shopinvader.tests.test_cart import CommonConnectedCartCase
-from odoo.exceptions import UserError
+from openerp.addons.shopinvader.tests.test_cart import CommonConnectedCartCase
+from openerp.exceptions import UserError
 
 
 class TestShopinvaderPaymentManual(CommonConnectedCartCase):
     def setUp(self, *args, **kwargs):
-        super().setUp(*args, **kwargs)
+        super(TestShopinvaderPaymentManual, self).setUp(*args, **kwargs)
         self.shopinvader_payment = self.env.ref(
             "shopinvader_payment_manual.shopinvader_payment_check"
         )

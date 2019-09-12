@@ -1,10 +1,11 @@
+# -*- coding: utf-8 -*-
 # Copyright 2019 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
 import requests
-from odoo import _
-from odoo.exceptions import UserError
+from openerp import _
+from openerp.exceptions import UserError
 from vcr_unittest import VCRMixin
 
 from .common import TestCommonPayment
@@ -27,7 +28,7 @@ AUTOMATIC_RESPONSE_URL = (
 
 class TestInvaderPaymentSips(VCRMixin, TestCommonPayment):
     def setUp(self):
-        super().setUp()
+        super(TestInvaderPaymentSips, self).setUp()
         self.payment_mode = self.env.ref(
             "invader_payment_sips.payment_mode_sips"
         )

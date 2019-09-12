@@ -1,16 +1,17 @@
+# -*- coding: utf-8 -*-
 # Copyright 2019 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
 
-from odoo import _
-from odoo.exceptions import UserError
+from openerp import _
+from openerp.exceptions import UserError
 
 from .common import TestCommonPayment
 
 
 class TestInvaderPaymentManual(TestCommonPayment):
     def setUp(self):
-        super().setUp()
+        super(TestInvaderPaymentManual, self).setUp()
         self.payment_mode = self.env.ref(
             "invader_payment_manual.payment_mode_check"
         )

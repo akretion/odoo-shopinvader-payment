@@ -22,4 +22,3 @@ class InvaderPaymentService(Component):
         )._invader_get_target_validator()
         res["target"]["allowed"].append("current_cart")
         return res
-

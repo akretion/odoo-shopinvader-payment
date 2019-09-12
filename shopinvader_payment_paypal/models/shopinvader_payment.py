@@ -5,8 +5,8 @@
 import json
 import logging
 
-from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from openerp import _, api, fields, models
+from openerp.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
