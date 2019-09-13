@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2019 Akretion (http://www.akretion.com).
 # @author Sébastien BEAU <sebastien.beau@akretion.com>
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
@@ -28,7 +29,7 @@ PAYPAL_FORM_PAGE = "https://www.sandbox.paypal.com/checkoutnow?token="
 
 class TestInvaderPaymentPaypal(VCRMixin, TestCommonPayment):
     def setUp(self):
-        super().setUp()
+        super(TestInvaderPaymentPaypal, self).setUp()
         self.payment_mode = self.env.ref(
             "invader_payment_paypal.payment_mode_paypal"
         )
