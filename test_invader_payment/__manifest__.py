@@ -17,6 +17,7 @@
         "invader_payment_stripe",
         "invader_payment_manual",
         "invader_payment_sips",
+        "invader_payment_paypal",
     ],
     "data": [],
     "demo": [],
