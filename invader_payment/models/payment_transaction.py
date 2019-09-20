@@ -63,9 +63,10 @@ class PaymentTransaction(models.Model):
             if not payables:
                 continue
             for payable in payables:
-                state = record.state
-                event_name = "on_payment_transaction_{}".format(state)
-                payable._event(event_name).notify(payable, record)
+                if not isinstance(payable.id, models.NewId):
+                    state = record.state
+                    event_name = "on_payment_transaction_{}".format(state)
+                    payable._event(event_name).notify(payable, record)
 
     # CODE BELOW IS A BACKPORT FROM ODOO 12.0 TO HAVE THE SAME API
     # IN odoo-shopinvader-payment 10.0 AND 12.0 !!!!!!!
