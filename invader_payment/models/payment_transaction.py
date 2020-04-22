@@ -121,6 +121,7 @@ class PaymentTransaction(models.Model):
         """Log the message saying the transaction has been sent to the remote
         server to be processed by the acquirer.
         """
+        return
         for trans in self:
             post_message = trans._get_payment_transaction_sent_message()
             for inv in trans.invoice_ids:
@@ -136,9 +137,8 @@ class PaymentTransaction(models.Model):
         :param add_messages:    Optional additional messages to log like the
                                 capture status.
         """
-        for trans in self.filtered(
-            lambda t: t.provider not in ("manual", "transfer")
-        ):
+        return
+        for trans in self:
             post_message = trans._get_payment_transaction_received_message()
             for inv in trans.invoice_ids:
                 inv.message_post(body=post_message)
@@ -178,7 +178,7 @@ class PaymentTransaction(models.Model):
             )
 
         # Cancel the existing payments.
-        self.mapped("payment_id").cancel()
+        #self.mapped("payment_id").cancel()
 
         self.write({"state": "cancel", "date_validate": fields.Datetime.now()})
         self._log_payment_transaction_received()

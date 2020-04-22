@@ -45,6 +45,7 @@ class PaymentTransaction(models.Model):
     @api.multi
     def _log_payment_transaction_sent(self):
         super(PaymentTransaction, self)._log_payment_transaction_sent()
+        return
         for trans in self:
             post_message = trans._get_payment_transaction_sent_message()
             for so in trans.sale_order_ids:
@@ -53,6 +54,7 @@ class PaymentTransaction(models.Model):
     @api.multi
     def _log_payment_transaction_received(self):
         super(PaymentTransaction, self)._log_payment_transaction_received()
+        return
         for trans in self.filtered(
             lambda t: t.provider not in ("manual", "transfer")
         ):
