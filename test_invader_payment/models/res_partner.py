@@ -9,13 +9,13 @@ class ResPartner(models.Model):
     _inherit = ["invader.payable", "res.partner"]
     _name = "res.partner"
 
-    def _invader_prepare_payment_transaction_data(self, acquirer_id):
+    def _invader_prepare_payment_transaction_data(self, acquirer):
         self.ensure_one()
         vals = {
             "amount": 5,
             "currency_id": self.env.ref("base.EUR").id,
             "partner_id": self.id,
-            "acquirer_id": acquirer_id.id,
+            "acquirer_id": acquirer.id,
             "reference": "Fake",
         }
         return vals
