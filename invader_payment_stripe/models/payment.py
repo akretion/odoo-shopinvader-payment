@@ -4,7 +4,7 @@
 
 import logging
 
-from odoo import _, models
+from odoo import _, fields, models
 from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
@@ -12,6 +12,18 @@ _logger = logging.getLogger(__name__)
 
 class PaymentAcquirerStripe(models.Model):
     _inherit = "payment.acquirer"
+
+    stripe_automatic_payment_methods = fields.Boolean(
+        "Stripe automatic payment methods",
+        help="When checked, stripe automatically chooses the payment method types"
+        "to present to the user. (Only working with PaymentElement)",
+        default=True,
+    )
+    stripe_manual_payment_methods = fields.Many2many(
+        string="Stripe manual payment methods",
+        help="Payment method types to present to the user. (Only working with PaymentElement)",
+        comodel_name="payment.stripe.method.type",
+    )
 
     def _handle_stripe_webhook(self, data):
         wh_type = data.get("type")
@@ -50,3 +62,10 @@ class PaymentAcquirerStripe(models.Model):
             transaction.amount = payment_intent["amount"] / 100  # Amount is in cents
         transaction._set_transaction_done()
         return True
+
+
+class PaymentStripeMethodType(models.Model):
+    _name = "payment.stripe.method.type"
+    _description = "Stripe Payment Method Type"
+
+    name = fields.Char(required=True)

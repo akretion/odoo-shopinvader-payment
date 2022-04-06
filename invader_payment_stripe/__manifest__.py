@@ -13,4 +13,9 @@
     "depends": ["invader_payment", "payment_stripe", "base_rest"],
     "data": ["data/decimal_precision.xml"],
     "installable": True,
+    "data": [
+        "views/payment_views.xml",
+        "data/stripe_payment_method_types.xml",
+        "security/ir.model.access.csv",
+    ],
 }
