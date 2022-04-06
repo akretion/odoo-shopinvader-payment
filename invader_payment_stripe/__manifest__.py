@@ -12,4 +12,9 @@
     "external_dependencies": {"python": ["cerberus", "stripe"], "bin": []},
     "depends": ["invader_payment", "payment_stripe", "base_rest"],
     "installable": True,
+    "data": [
+        "views/payment_views.xml",
+        "data/stripe_payment_method_types.xml",
+        "security/ir.model.access.csv",
+    ],
 }

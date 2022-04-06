@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="acquirer_form_stripe" model="ir.ui.view">
+        <field name="name">payment.acquirer.form.inherit</field>
+        <field name="model">payment.acquirer</field>
+        <field name="inherit_id" ref="payment_stripe.acquirer_form_stripe" />
+        <field name="arch" type="xml">
+            <xpath expr='//field[@name="stripe_webhook_secret"]' position='after'>
+                <field name="stripe_automatic_payment_methods" />
+                <field
+                    name="stripe_manual_payment_methods"
+                    attrs="{'invisible': [('stripe_automatic_payment_methods', '=', True)]}"
+                />
+            </xpath>
+        </field>
+    </record>
+</odoo>

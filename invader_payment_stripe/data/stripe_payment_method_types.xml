@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <data>
+        <record
+            id="stripe_payment_method_type_acss_debit"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">acss_debit</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_afterpay_clearpay"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">afterpay_clearpay</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_alipay"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">alipay</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_au_becs_debit"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">au_becs_debit</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_bacs_debit"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">bacs_debit</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_bancontact"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">bancontact</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_boleto"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">boleto</field>
+        </record>
+        <record id="stripe_payment_method_type_card" model="payment.stripe.method.type">
+            <field name="name">card</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_card_present"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">card_present</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_customer_balance"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">customer_balance</field>
+        </record>
+        <record id="stripe_payment_method_type_eps" model="payment.stripe.method.type">
+            <field name="name">eps</field>
+        </record>
+        <record id="stripe_payment_method_type_fpx" model="payment.stripe.method.type">
+            <field name="name">fpx</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_giropay"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">giropay</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_grabpay"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">grabpay</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_ideal"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">ideal</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_interac_present"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">interac_present</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_klarna"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">klarna</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_konbini"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">konbini</field>
+        </record>
+        <record id="stripe_payment_method_type_oxxo" model="payment.stripe.method.type">
+            <field name="name">oxxo</field>
+        </record>
+        <record id="stripe_payment_method_type_p24" model="payment.stripe.method.type">
+            <field name="name">p24</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_paynow"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">paynow</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_sepa_debit"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">sepa_debit</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_sofort"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">sofort</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_us_bank_account"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">us_bank_account</field>
+        </record>
+        <record
+            id="stripe_payment_method_type_wechat_pay"
+            model="payment.stripe.method.type"
+        >
+            <field name="name">wechat_pay</field>
+        </record>
+    </data>
+</odoo>

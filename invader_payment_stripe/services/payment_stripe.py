@@ -219,7 +219,12 @@ class PaymentServiceStripe(AbstractComponent):
             intent_kwargs["confirmation_method"] = "manual"
             intent_kwargs["confirm"] = True
         else:
-            intent_kwargs["automatic_payment_methods"] = {"enabled": True}
+            if transaction.acquirer_id.stripe_automatic_payment_methods:
+                intent_kwargs["automatic_payment_methods"] = {"enabled": True}
+            else:
+                intent_kwargs[
+                    "payment_method_types"
+                ] = transaction.acquirer_id.stripe_manual_payment_methods.mapped("name")
         intent = stripe.PaymentIntent.create(**intent_kwargs)
         return intent
 
