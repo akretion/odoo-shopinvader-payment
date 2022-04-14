@@ -68,4 +68,7 @@ class PaymentStripeMethodType(models.Model):
     _name = "payment.stripe.method.type"
     _description = "Stripe Payment Method Type"
 
+    _order = "sequence, id"
+
     name = fields.Char(required=True)
+    sequence = fields.Integer("Sequence")
