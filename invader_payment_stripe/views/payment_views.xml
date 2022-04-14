@@ -10,7 +10,12 @@
                 <field
                     name="stripe_manual_payment_methods"
                     attrs="{'invisible': [('stripe_automatic_payment_methods', '=', True)]}"
-                />
+                >
+                    <tree>
+                        <field name="sequence" widget="handle" />
+                        <field name="name" />
+                    </tree>
+                </field>
             </xpath>
         </field>
     </record>
