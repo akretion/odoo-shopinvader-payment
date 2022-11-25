@@ -29,6 +29,8 @@ class PaymentAcquirerStripe(models.Model):
         wh_type = data.get("type")
         if wh_type == "payment_intent.succeeded":
             return self._handle_stripe_intent_succeeded_webhook(data)
+        elif wh_type == "charge.refunded":
+            return self._handle_stripe_charge_refunded_webhook(data)
         else:
             return super()._handle_stripe_webhook(data)
 
@@ -61,6 +63,54 @@ class PaymentAcquirerStripe(models.Model):
         if "amount" in payment_intent:
             transaction.amount = payment_intent["amount"] / 100  # Amount is in cents
         transaction._set_transaction_done()
+        return True
+
+    def _handle_stripe_charge_refunded_webhook(self, data):
+        charge = data.get("data", {}).get("object")  # contains a stripe.Charge
+        if not charge:
+            raise ValidationError(
+                _("Stripe Webhook data does not conform to the expected API.")
+            )
+        acquirer = self.env.ref("payment.payment_acquirer_stripe")
+        acquirer._verify_stripe_signature()
+        refunds = charge["refunds"]["data"]
+        for refund in refunds:
+            existing_payment = self.env["account.payment"].search(
+                [("ref", "=", refund["id"])], limit=1
+            )
+            if existing_payment:
+                continue  # Payment already registered
+            transaction = self.env["payment.transaction"].search(
+                [
+                    ("acquirer_reference", "=", refund["payment_intent"]),
+                ],
+                limit=1,
+            )
+            if transaction:
+                payment = self.env["account.payment"].create(
+                    {
+                        "payment_type": "outbound",
+                        "partner_type": "customer",
+                        "journal_id": acquirer.journal_id.id,
+                        "amount": refund["amount"] / 100,
+                        "partner_id": transaction.partner_id.id,
+                        "ref": refund["id"],
+                    }
+                )
+                payment.action_post()
+                _logger.info(
+                    _("{} refunded for {}").format(
+                        refund["amount"] / 100, transaction.partner_id.name
+                    )
+                )
+            else:
+                _logger.warning(
+                    _(
+                        "Received a refund for an unknown transaction ({})".format(
+                            refund.get("id")
+                        )
+                    )
+                )
         return True
 
 
