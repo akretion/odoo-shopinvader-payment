@@ -63,6 +63,7 @@ class PaymentAcquirerStripe(models.Model):
         if "amount" in payment_intent:
             transaction.amount = payment_intent["amount"] / 100  # Amount is in cents
         transaction._set_transaction_done()
+        transaction._notify_state_changed_event()
         return True
 
     def _handle_stripe_charge_refunded_webhook(self, data):
