@@ -77,16 +77,25 @@ class PaymentAcquirerStripe(models.Model):
         refunds = charge["refunds"]["data"]
         for refund in refunds:
             existing_payment = self.env["account.payment"].search(
-                [("ref", "=", refund["id"])], limit=1
-            )
-            if existing_payment:
-                continue  # Payment already registered
-            transaction = self.env["payment.transaction"].search(
                 [
-                    ("acquirer_reference", "=", refund["payment_intent"]),
+                    ("ref", "=", refund["id"]),
+                    ("journal_id", "=", acquirer.journal_id.id),
                 ],
                 limit=1,
             )
+            if existing_payment:
+                continue  # Payment already registered
+            transaction = None
+            # Do not try to search for a transaction if the refund does not
+            # concern a Payment Intent
+            if refund.get("payment_intent"):
+                transaction = self.env["payment.transaction"].search(
+                    [
+                        ("acquirer_reference", "=", refund["payment_intent"]),
+                        ("acquirer_id", "=", acquirer.id),
+                    ],
+                    limit=1,
+                )
             if transaction:
                 payment = self.env["account.payment"].create(
                     {
