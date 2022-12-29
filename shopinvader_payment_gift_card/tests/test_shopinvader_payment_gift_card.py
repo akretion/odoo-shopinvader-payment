@@ -46,14 +46,14 @@ class ShopinvaderPaymentGiftcardTest(
         params = {
             "code": self.gc1.code,
         }
-        response = self.cart_service.dispatch("get_gift_card_from_code", params=params)
+        response = self.cart_service.dispatch("get_by_code", params=params)
         self.assertEqual(self.gc1.id, response[0].get("id"))
 
     def test_2_gift_card_amount_validation(self):
         self.gc1.beneficiary_id = self.cart.partner_id
-        params = {"card": self.gc1, "gift_card_amount": 30.5, "code": self.gc1.code}
+        params = {"target": "current_cart", "code": self.gc1.code, "amount": 30.5}
         response = self.cart_service.dispatch(
-            "gift_card_amount_validation", params=params
+            "confirm_payment", params=params
         )
         self.assertEqual(len(self.cart.gift_card_line_ids), 1)
         self.assertEqual(response[0].get("amount_used"), 30.5)
@@ -63,11 +63,11 @@ class ShopinvaderPaymentGiftcardTest(
     def test_3_payment_gift_card(self):
         self.assertFalse(self.cart.transaction_ids)
         params = {
-            "card": self.gc1,
-            "gift_card_amount": 45,
+            "target": "current_cart",
             "code": self.gc1.code,
+            "amount": 45
         }
-        self.cart_service.dispatch("gift_card_amount_validation", params=params)
+        self.cart_service.dispatch("confirm_payment", params=params)
         self.assertEqual(len(self.cart.gift_card_line_ids), 1)
 
         self.assertEqual(0, len(self.cart.transaction_ids))
@@ -132,21 +132,21 @@ class ShopinvaderPaymentGiftcardTest(
         self.assertFalse(self.cart.transaction_ids)
 
         params = {
-            "card": self.gc1,
-            "gift_card_amount": 45,
+            "target": "current_cart",
             "code": self.gc1.code,
+            "amount": 45,
         }
-        self.cart_service.dispatch("gift_card_amount_validation", params=params)
+        self.cart_service.dispatch("confirm_payment", params=params)
 
         self.assertEqual(0, len(self.cart.transaction_ids))
         self.assertEqual(self.cart.remain_amount, self.cart.amount_total - 45)
 
         params = {
-            "card": self.gc2,
-            "gift_card_amount": 30,
+            "target": "current_cart",
+            "amount": 30,
             "code": self.gc2.code,
         }
-        self.cart_service.dispatch("gift_card_amount_validation", params=params)
+        self.cart_service.dispatch("confirm_payment", params=params)
 
         self.assertEqual(len(self.cart.gift_card_line_ids), 2)
         self.assertEqual(self.cart.remain_amount, self.cart.amount_total - 75)
@@ -231,12 +231,12 @@ class ShopinvaderPaymentGiftcardTest(
     def test_5_unlink_gift_card_line(self):
         gc1_initial_amount = self.gc1.initial_amount
         params = {
-            "card": self.gc1,
-            "gift_card_amount": gc1_initial_amount,
+            "target": "current_cart",
+            "amount": gc1_initial_amount,
             "code": self.gc1.code,
         }
         gift_card_line = self.cart_service.dispatch(
-            "gift_card_amount_validation", params=params
+            "confirm_payment", params=params
         )
         self.assertEqual(len(self.cart.gift_card_line_ids), 1)
         self.assertEqual(
@@ -247,7 +247,7 @@ class ShopinvaderPaymentGiftcardTest(
         self.assertEqual(len(self.gc1.gift_card_line_ids), 1)
 
         params2 = {"line_id": gift_card_line[0].get("id")}
-        self.cart_service.dispatch("unlink_gift_card_line", params=params2)
+        self.cart_service.dispatch("cancel_payment", params=params2)
         self.assertEqual(len(self.cart.gift_card_line_ids), 0)
         self.assertEqual(self.cart.remain_amount, self.cart.amount_total)
         self.assertEqual(len(self.gc1.gift_card_line_ids), 0)
@@ -326,11 +326,6 @@ class ShopinvaderPaymentGiftcardTest(
             "code": self.gc2.code,
         }
         self.cart_service.dispatch("gift_card_amount_validation", params=params)
-
-        params = {
-            "cart": self.cart.id,
-        }
-        self.service_gift_card.dispatch("payment_with_gift_card_only", params=params)
 
         self.assertEqual("sale", self.cart.state)
         self.assertEqual(len(self.cart.gift_card_line_ids), 2)
