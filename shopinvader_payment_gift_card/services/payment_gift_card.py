@@ -93,7 +93,6 @@ class PaymentServiceGiftCard(AbstractComponent):
         acquirer = self.env.ref("account_payment_gift_card.payment_acquirer_gift_card")
         domain = [("acquirer_id", "=", acquirer.id), ("id", "=", params.id)]
         transaction = self.env["payment.transaction"].search(domain)
-        transaction.gift_card_line_id.unlink()
         transaction._set_transaction_cancel()
         return {}
 

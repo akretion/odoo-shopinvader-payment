@@ -16,10 +16,11 @@
     "depends": [
         "shopinvader_payment",
         "shopinvader_gift_card",
-        "account_payment_gift_card",
         "base_rest",
         "base_jsonify",
         "base_rest_datamodel",
         "shopinvader_payment_manual",
+    ],
+    "data": [
     ],
 }
