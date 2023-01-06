@@ -17,9 +17,9 @@ class GiftCardCodeInput(Datamodel):
     code = fields.String(required=True)
 
 
-class GiftCardLineInput(Datamodel):
-    _name = "gift.card.line.input"
-    line_id = fields.Integer()
+class PaymentTransactionInput(Datamodel):
+    _name = "payment.transaction.input"
+    id = fields.Integer(required=True)
 
 
 class GiftCardPaymentInput(Datamodel):
@@ -47,10 +47,10 @@ class PaymentServiceGiftCard(AbstractComponent):
         return JSONIFY_GIFT_CARD_LINE
 
     @restapi.method(
-        routes=[(["/confirm_payment"], "POST")],
+        routes=[(["/create_payment"], "POST")],
         input_param=restapi.Datamodel("gift.card.payment.input"),
     )
-    def confirm_payment(self, params):
+    def create_payment(self, params):
         payable = self.payment_service._invader_find_payable_from_target(
             params.target
         )
@@ -70,10 +70,32 @@ class PaymentServiceGiftCard(AbstractComponent):
                 "amount_used": transaction.amount,
                 "transaction_id": transaction.id,
                 "payment_id": transaction.payment_id.id,
-                    }
+                }
         )
-        transaction._set_transaction_done()
         return line.jsonify(self._parser_giftcard_line())
+
+    @restapi.method(
+        routes=[(["/confirm_payment"], "POST")],
+        input_param=restapi.Datamodel("payment.transaction.input"),
+    )
+    def confirm_payment(self, params):
+        acquirer = self.env.ref("account_payment_gift_card.payment_acquirer_gift_card")
+        domain = [("acquirer_id", "=", acquirer.id), ("id", "=", params.id)]
+        transaction = self.env["payment.transaction"].search(domain)
+        transaction._set_transaction_done()
+        return {}
+
+    @restapi.method(
+        routes=[(["/cancel_payment"], "POST")],
+        input_param=restapi.Datamodel("payment.transaction.input"),
+    )
+    def cancel_payment(self, params):
+        acquirer = self.env.ref("account_payment_gift_card.payment_acquirer_gift_card")
+        domain = [("acquirer_id", "=", acquirer.id), ("id", "=", params.id)]
+        transaction = self.env["payment.transaction"].search(domain)
+        transaction.gift_card_line_id.unlink()
+        transaction._set_transaction_cancel()
+        return {}
 
     @restapi.method(
         routes=[(["/get_by_code"], "GET")],
@@ -87,17 +109,6 @@ class PaymentServiceGiftCard(AbstractComponent):
             self.env["gift.card"].check_gift_card_code(gift_card.code)
             if gift_card.state == "active":
                 return gift_card.jsonify(self._parser_giftcard())
-
-
-    @restapi.method(
-        routes=[(["/cancel_payment"], "POST")],
-        input_param=restapi.Datamodel("gift.card.line.input"),
-    )
-    def cancel_payment(self, params):
-        line = self.env["gift.card.line"].browse(params.line_id)
-        line.transaction_id.state = "cancel"
-        line.unlink()
-        return {}
 
 
 class PaymentServiceGiftCardShopinvader(Component):
