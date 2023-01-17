@@ -61,17 +61,19 @@ class PaymentServiceGiftCard(AbstractComponent):
         gift_card = self.env["gift.card"].check_gift_card_code(params.code)
         if params.amount:
             transaction.amount = min(params.amount, transaction.amount)
-        line = self.env["gift.card.line"].create(
-                {
-                "gift_card_id": gift_card.id,
-                "name": gift_card.name,
-                "beneficiary_id": transaction.partner_id.id,
-                "code": params.code,
-                "amount_used": transaction.amount,
-                "transaction_id": transaction.id,
-                "payment_id": transaction.payment_id.id,
-                }
-        )
+        transaction.acquirer_reference = params.code
+        vals = {
+            "gift_card_id": gift_card.id,
+            "name": gift_card.name,
+            "beneficiary_id": transaction.partner_id.id,
+            "code": params.code,
+            "amount_used": transaction.amount,
+            "transaction_id": transaction.id,
+            "payment_id": transaction.payment_id.id,
+        }
+        if payable._name == "sale.order":
+            vals["sale_order_ids"] = payable.ids
+        line = self.env["gift.card.line"].create(vals)
         return line.jsonify(self._parser_giftcard_line())
 
     @restapi.method(
