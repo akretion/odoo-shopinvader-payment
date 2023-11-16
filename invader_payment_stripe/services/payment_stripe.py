@@ -40,6 +40,11 @@ class PaymentServiceStripe(AbstractComponent):
 
     def _validator_create(self):
         res = self.payment_service._invader_get_target_validator()
+        res.update(
+            {
+                "preferred_locale": {"type": "string", "nullable": True},
+            }
+        )
         return res
 
     def _validator_confirm_payment(self):
@@ -121,7 +126,7 @@ class PaymentServiceStripe(AbstractComponent):
         transaction = self.env["payment.transaction"].create(
             payable._invader_prepare_payment_transaction_data(acquirer)
         )
-        intent = self._prepare_stripe_intent(transaction, None)
+        intent = self._prepare_stripe_intent(transaction, None, **params)
         transaction.write(
             {
                 "acquirer_reference": intent.id,
@@ -171,7 +176,7 @@ class PaymentServiceStripe(AbstractComponent):
                     payable._invader_prepare_payment_transaction_data(acquirer)
                 )
                 intent = self._prepare_stripe_intent(
-                    transaction, stripe_payment_method_id
+                    transaction, stripe_payment_method_id, **params
                 )
                 transaction.write({"acquirer_reference": intent.id})
             elif stripe_payment_intent_id:
@@ -197,7 +202,7 @@ class PaymentServiceStripe(AbstractComponent):
                 transaction._set_transaction_error(_("Exception: {}".format(e)))
             return self._generate_stripe_error_response(target, **params)
 
-    def _prepare_stripe_intent(self, transaction, stripe_payment_method_id):
+    def _prepare_stripe_intent(self, transaction, stripe_payment_method_id, **params):
         """
         Prepare a StripeIntent with payment.transaction data
         :param tx_data:
@@ -222,9 +227,18 @@ class PaymentServiceStripe(AbstractComponent):
             if transaction.acquirer_id.stripe_automatic_payment_methods:
                 intent_kwargs["automatic_payment_methods"] = {"enabled": True}
             else:
-                intent_kwargs[
-                    "payment_method_types"
-                ] = transaction.acquirer_id.stripe_manual_payment_methods.mapped("name")
+                payment_method_types = transaction.acquirer_id.stripe_manual_payment_methods.mapped(
+                    "name"
+                )
+                intent_kwargs["payment_method_types"] = payment_method_types
+                if "klarna" in payment_method_types and params.get(
+                    "preferred_locale"
+                ):
+                    intent_kwargs["payment_method_options"] = {
+                        "klarna": {
+                            "preferred_locale": params["preferred_locale"]
+                        }
+                    }
         intent = stripe.PaymentIntent.create(**intent_kwargs)
         return intent
 

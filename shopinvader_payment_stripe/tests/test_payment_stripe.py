@@ -2,13 +2,16 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 from datetime import datetime, timedelta
 
+import json
 import mock
+from unittest.mock import patch, ANY
 from stripe import PaymentIntent
 
 from odoo.addons.invader_payment_stripe.services.payment_stripe import (
     PaymentServiceStripe,
 )
 from odoo.addons.shopinvader.tests.test_cart import CommonConnectedCartCase
+from odoo.tools import mute_logger
 
 
 class ShopinvaderStripePaymentCase(CommonConnectedCartCase):
@@ -54,3 +57,114 @@ class ShopinvaderStripePaymentCase(CommonConnectedCartCase):
         )
         self.env["payment.transaction"]._cron_post_process_after_done()
         self.assertEqual("sale", self.cart.state)
+
+    @mute_logger("stripe")
+    @patch("stripe.http_client.RequestsClient.request_with_retries")
+    def test_payment_stripe_service_create_intent(self, stripe_request):
+        acquirer = self.env.ref("payment.payment_acquirer_stripe")
+        acquirer.stripe_secret_key = "very secret key"
+
+        rbody = json.dumps({"id": "test_response", "status": "succeeded"})
+        rcode = 200
+        rheaders = {}
+        stripe_request.return_value = (rbody, rcode, rheaders)
+
+        self.payment_service.dispatch(
+            "create",
+            params={
+                "target": "current_cart",
+            },
+        )
+
+        stripe_request.assert_called_once_with(
+            "post",
+            "https://api.stripe.com/v1/payment_intents",
+            ANY,
+            "&".join(
+                [
+                    "amount=855500",
+                    "currency=USD",
+                    "description=S00213-1",
+                    "metadata[reference]=S00213-1",
+                    "automatic_payment_methods[enabled]=True",
+                ]
+            ),
+        )
+
+    @mute_logger("stripe")
+    @patch("stripe.http_client.RequestsClient.request_with_retries")
+    def test_payment_stripe_service_create_intent_manual(self, stripe_request):
+        acquirer = self.env.ref("payment.payment_acquirer_stripe")
+        acquirer.stripe_secret_key = "very secret key"
+        acquirer.stripe_automatic_payment_methods = False
+        acquirer.stripe_manual_payment_methods = self.env.ref(
+            "invader_payment_stripe.stripe_payment_method_type_klarna"
+        )
+
+        rbody = json.dumps({"id": "test_response", "status": "succeeded"})
+        rcode = 200
+        rheaders = {}
+        stripe_request.return_value = (rbody, rcode, rheaders)
+
+        self.payment_service.dispatch(
+            "create",
+            params={
+                "target": "current_cart",
+            },
+        )
+
+        stripe_request.assert_called_once_with(
+            "post",
+            "https://api.stripe.com/v1/payment_intents",
+            ANY,
+            "&".join(
+                [
+                    "amount=855500",
+                    "currency=USD",
+                    "description=S00213-1",
+                    "metadata[reference]=S00213-1",
+                    "payment_method_types[0]=klarna",
+                ]
+            ),
+        )
+
+    @mute_logger("stripe")
+    @patch("stripe.http_client.RequestsClient.request_with_retries")
+    def test_payment_stripe_service_create_intent_klarna_preferred_locale(
+        self, stripe_request
+    ):
+        acquirer = self.env.ref("payment.payment_acquirer_stripe")
+        acquirer.stripe_secret_key = "very secret key"
+        acquirer.stripe_automatic_payment_methods = False
+        acquirer.stripe_manual_payment_methods = self.env.ref(
+            "invader_payment_stripe.stripe_payment_method_type_klarna"
+        )
+
+        rbody = json.dumps({"id": "test_response", "status": "succeeded"})
+        rcode = 200
+        rheaders = {}
+        stripe_request.return_value = (rbody, rcode, rheaders)
+
+        self.payment_service.dispatch(
+            "create",
+            params={
+                "target": "current_cart",
+                "preferred_locale": "fr-BE",
+            },
+        )
+
+        stripe_request.assert_called_once_with(
+            "post",
+            "https://api.stripe.com/v1/payment_intents",
+            ANY,
+            "&".join(
+                [
+                    "amount=855500",
+                    "currency=USD",
+                    "description=S00213-1",
+                    "metadata[reference]=S00213-1",
+                    "payment_method_types[0]=klarna",
+                    "payment_method_options[klarna][preferred_locale]=fr-BE",
+                ]
+            ),
+        )
