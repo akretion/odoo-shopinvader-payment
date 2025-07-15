@@ -43,6 +43,7 @@ class PaymentServiceStripe(AbstractComponent):
         res.update(
             {
                 "preferred_locale": {"type": "string", "nullable": True},
+                "preferred_language": {"type": "string", "nullable": True},
             }
         )
         return res
@@ -237,6 +238,14 @@ class PaymentServiceStripe(AbstractComponent):
                     intent_kwargs["payment_method_options"] = {
                         "klarna": {
                             "preferred_locale": params["preferred_locale"]
+                        }
+                    }
+                if "bancontact" in payment_method_types and params.get(
+                    "preferred_language"
+                ):
+                    intent_kwargs["payment_method_options"] = {
+                        "bancontact": {
+                            "preferred_language": params["preferred_language"]
                         }
                     }
         intent = stripe.PaymentIntent.create(**intent_kwargs)
