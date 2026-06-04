@@ -46,10 +46,10 @@ class TestPaymentCart(TestPaymentCommon):
             self.payable_rec.currency_id.format(self.payable_rec.amount),
         )
         providers = res["providers"]
-        self.assertEqual(len(providers), 1)
-        provider = providers[0]
-        self.assertEqual(provider["id"], self.demo_provider.id)
-        methods = provider["payment_methods"]
+        self.assertEqual(len(providers), 2)
+        self.assertEqual(providers[0]["id"], self.demo_method_1.id)
+        self.assertEqual(providers[1]["id"], self.demo_method_2.id)
+        methods = providers[0]["payment_methods"]
         self.assertEqual(len(methods), 2)
         method_ids = {method["id"] for method in methods}
         self.assertIn(self.demo_method_1.id, method_ids)
@@ -62,16 +62,15 @@ class TestPaymentCart(TestPaymentCommon):
         data = {
             "payable": self.encoded_payable,
             "flow": "redirect",
-            "provider_id": self.demo_provider.id,
-            "payment_method_id": self.demo_method_1.id,
+            "provider_id": self.demo_method_1.id,
             "frontend_redirect_url": "www.rtbf.be",
         }
         with self._create_test_client(router=payment_router) as test_client:
             response: Response = test_client.post("/payment/transactions", json=data)
         self.assertEqual(response.status_code, status.HTTP_200_OK, response.text)
         res = response.json()
-        self.assertEqual(res["provider_id"], self.demo_provider.id)
-        self.assertEqual(res["provider_code"], self.demo_provider.code)
+        self.assertEqual(res["provider_id"], self.demo_method_1.id)
+        self.assertEqual(res["provider_code"], self.demo_method_1.code)
         self.assertEqual(res["reference"], self.payable_rec.name)
         self.assertEqual(res["amount"], self.payable_rec.amount)
         self.assertEqual(res["currency_id"], self.payable_rec.currency_id.id)
